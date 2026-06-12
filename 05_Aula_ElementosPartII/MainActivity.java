@@ -3,25 +3,28 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
 {
+
     //1) Atributos
-    EditText txtProduto,txtValor;
-    SeekBar seekBar;
+    EditText txtProduto, txtValor;
     Switch swDesconto;
-    TextView lblValorSeekBar;
+    SeekBar seekBar;
     Button btnResultado;
 
-    //Valor da seekbar
-    int valorDaBarra = 0;
+    TextView lblValorSeekBar;
 
+    //Posição seekbar
+    double valorSeekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -29,24 +32,24 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //2) Iniciando os elementos
+        // 2) Linkar os elementos
         txtProduto = (EditText) findViewById(R.id.txtProduto);
         txtValor = (EditText) findViewById(R.id.txtValor);
-        lblValorSeekBar = (TextView) findViewById(R.id.lblValorSeekBar);
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
         swDesconto = (Switch) findViewById(R.id.swDesconto);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
         btnResultado = (Button) findViewById(R.id.btnResultado);
+        lblValorSeekBar = (TextView) findViewById(R.id.lblValorSeekBar);
 
-        //3) Deixando a barra desabilitada
+
+
+        //Desativar a Seekbar
         seekBar.setActivated(false);
 
-        //4) Limitando o valor da seekbar
+        //Limitando valor
         seekBar.setMax(45);
-        seekBar.setMin(10);
 
-        //5) Evento do switch
-        swDesconto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
-        {
+        //Evento switch
+        swDesconto.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b)
             {
@@ -57,33 +60,51 @@ public class MainActivity extends AppCompatActivity
 
 
 
-
-        //6) Evento da barra
+        // 3) SeekBar
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
         {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int posicao, boolean b)
+            public void onProgressChanged(SeekBar seekBar, int position, boolean b)
             {
-                //Atualizando valor
-                valorDaBarra = posicao;
+                valorSeekBar = position;
             }
-
             @Override
             public void onStartTrackingTouch(SeekBar seekBar)
             {
 
             }
-
             @Override
             public void onStopTrackingTouch(SeekBar seekBar)
             {
-                //Atualizando o valor na telinha
-                lblValorSeekBar.setText(valorDaBarra + " %");
+                lblValorSeekBar.setText(valorSeekBar + " %");
+            }
+        }); //
+
+        //4) Button
+        btnResultado.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                //Recuperando os valores
+                String produto = txtProduto.getText().toString();
+                double valorProduto = Double.parseDouble(
+                                   txtValor.getText().toString());
+
+                //Calculo
+                double valorFinal = valorProduto - (valorProduto * (valorSeekBar/100));
+
+                //Mensagem
+                String mensagem = "Produto: " + produto +
+                                  "\n Valor Inicial: " + valorProduto +
+                                  "\n Novo Valor: " + valorFinal;
+
+                //Toast
+                Toast.makeText(MainActivity.this,
+                              mensagem, Toast.LENGTH_LONG).show();
+
             }
         });
-
-
-
 
 
 
